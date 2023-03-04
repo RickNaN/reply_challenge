@@ -230,6 +230,7 @@ if __name__ == '__main__':
     print(list_of_lists)
     population=init_population()
     evolution(population)
+    print(best_individual[0])
     print(best_fit)
     print_data_output(best_individual[0])
            
