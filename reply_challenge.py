@@ -88,7 +88,7 @@ def compute_fitness(genome):
 ###########FLAVIO##################
 
 """parent selection"""
-def tournament(self, population, tournament_size=TOURNAMENT_SIZE):
+def tournament(population, tournament_size=TOURNAMENT_SIZE):
     global TOURNAMENT_SIZE          
     return max(random.choices(population, k=TOURNAMENT_SIZE), key=lambda i: i.fitness) 
     
@@ -119,9 +119,10 @@ def mutation(genome):
     global N_DEMONS 
     new_genome = deepcopy(genome)
     
-    pos_1 = random.randint(0,N_DEMONS) 
+    pos_1 = random.randint(0,N_DEMONS-1)
+    pos_2=None 
     while pos_2!=pos_1:
-        pos_2 = random.randint(0,N_DEMONS) 
+        pos_2 = random.randint(0,N_DEMONS-1) 
 
     val_1 = genome[pos_1]
     val_2 = genome[pos_2]
@@ -141,7 +142,7 @@ def cross_over(genome_1, genome_2):
     new_genome = []
     set_tot_val = {i for i in range(N_DEMONS)}
     for i in range(0, N_DEMONS):
-        if (random.randint(0,1) > CROSSOVER_THRESHOLD):
+        if (random.random() > CROSSOVER_THRESHOLD):
             new_genome.append(genome_1[i])
         else:
             new_genome.append(genome_2[i])
@@ -213,9 +214,9 @@ def evolution(population):
             final_population = []
             for i in range(N_DEMONS):
                 if random.random() > 0.3: #70% new population
-                    final_population[i].append(new_population[i])
+                    final_population.append(new_population[i])
                 else:
-                    final_population[i].append(population[i]) #30% old population
+                    final_population.append(population[i]) #30% old population
             
                 
         if actual_best_fit > best_fit:
