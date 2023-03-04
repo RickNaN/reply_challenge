@@ -7,12 +7,12 @@ import pandas as pd
 N = 100
 POPULATION_SIZE = N         
 OFFSPRING_SIZE = N*2        
-NUM_GENERATIONS = N   
+NUM_GENERATIONS = N*2   
 MAX_STEADY=5
-MAX_EXTINCTIONS=5   
+MAX_EXTINCTIONS=10   
 Individual = namedtuple("Individual", ["genome", "fitness"])
-TOURNAMENT_SIZE =int(N/2)
-GENETIC_OPERATOR_RANDOMNESS = 0.3
+TOURNAMENT_SIZE =int(N/4)
+GENETIC_OPERATOR_RANDOMNESS = 0.1
 MUTATION_THRESHOLD = 0.1
 CROSSOVER_THRESHOLD = 0.5
 
@@ -48,7 +48,7 @@ def take_data(nome_file):
 
 def print_data_output(result):
     s= pd.Series(result)
-    s.to_csv("output",index=False)
+    s.to_csv("output",index=False, header=False)
     
 #LEO
 
@@ -212,8 +212,8 @@ def evolution(population):
             check_steady = 0
             new_population = init_population()
             final_population = []
-            for i in range(N_DEMONS):
-                if random.random() > 0.3: #70% new population
+            for i in range(len(population)):
+                if random.random() > 0.15: #70% new population
                     final_population.append(new_population[i])
                 else:
                     final_population.append(population[i]) #30% old population
@@ -227,10 +227,10 @@ def evolution(population):
 
 if __name__ == '__main__':
     take_data("00-example.txt")
-    print(list_of_lists)
+    #print(list_of_lists)
     population=init_population()
     evolution(population)
-    print(best_individual[0])
+    #print(best_individual[0])
     print(best_fit)
     print_data_output(best_individual[0])
            
