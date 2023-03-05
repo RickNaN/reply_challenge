@@ -7,12 +7,12 @@ import pandas as pd
 N = 100
 POPULATION_SIZE = N         
 OFFSPRING_SIZE = N*2        
-NUM_GENERATIONS = N*2   
+NUM_GENERATIONS = N*4   
 MAX_STEADY=5
 MAX_EXTINCTIONS=10   
 Individual = namedtuple("Individual", ["genome", "fitness"])
 TOURNAMENT_SIZE =int(N/4)
-GENETIC_OPERATOR_RANDOMNESS = 0.1
+GENETIC_OPERATOR_RANDOMNESS = 0.3
 MUTATION_THRESHOLD = 0.1
 CROSSOVER_THRESHOLD = 0.5
 
@@ -118,17 +118,16 @@ def mutation(genome):
     global N_TURNS
     global N_DEMONS 
     new_genome = deepcopy(genome)
-    
+    """n_mutations=N_DEMONS//15
+    if n_mutations==0:
+        n_mutations=1
+    for i in range( n_mutations):"""
     pos_1 = random.randint(0,N_DEMONS-1)
-    pos_2=None 
-    while pos_2!=pos_1:
-        pos_2 = random.randint(0,N_DEMONS-1) 
-
-    val_1 = genome[pos_1]
-    val_2 = genome[pos_2]
-
-    new_genome[pos_1] = val_1
-    new_genome[pos_2] = val_2
+    val_1 = new_genome[pos_1]
+    val_2= random.randint(0,N_DEMONS-1)
+    pos_2=new_genome.index(val_2)
+    new_genome[pos_1] = val_2
+    new_genome[pos_2] = val_1
         
     return new_genome
 
@@ -217,16 +216,17 @@ def evolution(population):
                     final_population.append(new_population[i])
                 else:
                     final_population.append(population[i]) #30% old population
-            
-                
+            population=deepcopy(final_population)
+           
         if actual_best_fit > best_fit:
             best_fit = actual_best_fit
             best_individual=actual_best_individual
             check_steady = 0
-
+    print(generation)
+    print(check_extinctions)
 
 if __name__ == '__main__':
-    take_data("00-example.txt")
+    take_data("01-the-cloud-abyss.txt")
     #print(list_of_lists)
     population=init_population()
     evolution(population)
