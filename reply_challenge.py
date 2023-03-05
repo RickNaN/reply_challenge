@@ -7,8 +7,8 @@ import pandas as pd
 N = 100
 POPULATION_SIZE = N         
 OFFSPRING_SIZE = N*2        
-NUM_GENERATIONS = N*4   
-MAX_STEADY=5
+NUM_GENERATIONS = N*10  
+MAX_STEADY=10
 MAX_EXTINCTIONS=10   
 Individual = namedtuple("Individual", ["genome", "fitness"])
 TOURNAMENT_SIZE =int(N/4)
