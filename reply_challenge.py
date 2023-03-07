@@ -8,7 +8,7 @@ N = 100
 POPULATION_SIZE = N         
 OFFSPRING_SIZE = N*2        
 NUM_GENERATIONS = N*10
-ARTIFICIAL_MUTATIONS=15000#25000 
+ARTIFICIAL_MUTATIONS= 35000 #15000#25000 -> 1 min
 MAX_STEADY=10
 MAX_EXTINCTIONS=10   
 Individual = namedtuple("Individual", ["genome", "fitness"])
@@ -221,7 +221,7 @@ def evolution(population):
     print("TOT GENERATIONS: ", generation, "/", NUM_GENERATIONS)
     print("TOT EXTINCTIONS: " , check_extinctions , "/" , MAX_EXTINCTIONS)
 
-def fast_artificial_evolution():
+def artificial_evolution():
     global list_of_lists
     global best_individual
     global ARTIFICIAL_MUTATIONS
@@ -246,29 +246,6 @@ def fast_artificial_evolution():
             artificial_population.append(best_individual) 
             found=False 
     print("ARTIFICIAL GENERATIONS: ", gen, "+", gen_a)
-    
-def slow_artificial_evolution():
-    global list_of_lists
-    global best_individual
-    global ARTIFICIAL_MUTATIONS
-    artificial_population=[]
-    artificial_population.append(best_individual)
-    gen=0
-    gen_a=0
-    print("BEGIN ARTIFICIAL EVOLUTION")
-    for ind in artificial_population:
-        gen+=1
-        print(gen)
-        for a in range(ARTIFICIAL_MUTATIONS):
-            o=mutation(ind.genome)
-            f = compute_fitness(o)
-            frankenstein=Individual(o,f)
-            if best_individual[1] < frankenstein[1]:
-                artificial_population.append(frankenstein)
-                best_individual=Individual(frankenstein[0], frankenstein[1])
-                gen_a=a+1
-
-    print("ARTIFICIAL GENERATIONS: ", gen, "+", gen_a)
 
 if __name__ == '__main__':
     take_data("01-the-cloud-abyss.txt")
@@ -276,7 +253,7 @@ if __name__ == '__main__':
     population=init_population()
     evolution(population)
     print("EVOLUTION SCORE: " , best_individual[1])
-    slow_artificial_evolution()
+    artificial_evolution()
     #print(best_individual[0])
     print("FINAL SCORE: " , best_individual[1])
     print_data_output(best_individual[0])
