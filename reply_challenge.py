@@ -7,7 +7,8 @@ import pandas as pd
 N = 100
 POPULATION_SIZE = N         
 OFFSPRING_SIZE = N*2        
-NUM_GENERATIONS = N*10  
+NUM_GENERATIONS = N*10
+ARTIFICIAL_MUTATIONS=15000#25000 
 MAX_STEADY=10
 MAX_EXTINCTIONS=10   
 Individual = namedtuple("Individual", ["genome", "fitness"])
@@ -23,8 +24,7 @@ N_TURNS=None
 N_DEMONS=None
 RIGHE_FILE=None
 #DATA
-best_fit = sys.float_info.min
-best_individual=None
+best_individual=(None, sys.float_info.min)
 list_of_lists=[]
 
 #FABIO
@@ -128,7 +128,6 @@ def mutation(genome):
     pos_2=new_genome.index(val_2)
     new_genome[pos_1] = val_2
     new_genome[pos_2] = val_1
-        
     return new_genome
 
 """crossover"""
@@ -158,7 +157,6 @@ def cross_over(genome_1, genome_2):
 """evolution"""
 def evolution(population):
     global list_of_lists
-    global best_fit
     global best_individual
     global INITIAL_STAMINA
     global MAX_STAMINA
@@ -173,7 +171,7 @@ def evolution(population):
     check_steady = 0
     check_extinctions=0
     generation=0
-
+    print("BEGIN EVOLUTION")
     while(check_extinctions<=MAX_EXTINCTIONS and generation<NUM_GENERATIONS):
         generation+=1
         offspring = list()
@@ -201,10 +199,12 @@ def evolution(population):
 
         #check actual best individual
         actual_best_individual=Individual(population[0][0],population[0][1])
-        actual_best_fit = population[0][1]
 
-        if actual_best_fit <= best_fit:
-            check_steady = check_steady + 1
+        if actual_best_individual[1] > best_individual[1]:
+            best_individual=actual_best_individual
+            check_steady = 0
+        else:
+            check_steady+= 1
 
         if check_steady == MAX_STEADY:
             check_extinctions+=1
@@ -216,22 +216,69 @@ def evolution(population):
                     final_population.append(new_population[i])
                 else:
                     final_population.append(population[i]) #30% old population
-            population=deepcopy(final_population)
-           
-        if actual_best_fit > best_fit:
-            best_fit = actual_best_fit
-            best_individual=actual_best_individual
-            check_steady = 0
-    print(generation)
-    print(check_extinctions)
+            population=final_population
+    check_extinctions-=1       
+    print("TOT GENERATIONS: ", generation, "/", NUM_GENERATIONS)
+    print("TOT EXTINCTIONS: " , check_extinctions , "/" , MAX_EXTINCTIONS)
+
+def fast_artificial_evolution():
+    global list_of_lists
+    global best_individual
+    global ARTIFICIAL_MUTATIONS
+    artificial_population=[]
+    artificial_population.append(best_individual)
+    gen=0
+    gen_a=0
+    found=False 
+    print("BEGIN ARTIFICIAL EVOLUTION")
+    for ind in artificial_population:
+        gen+=1
+        print(gen)
+        for a in range(ARTIFICIAL_MUTATIONS):
+            o=mutation(ind.genome)
+            f = compute_fitness(o)
+            frankenstein=Individual(o,f)
+            if best_individual[1] < frankenstein[1]:
+                found=True 
+                best_individual=Individual(frankenstein[0], frankenstein[1])
+                gen_a=a+1
+        if found==True: 
+            artificial_population.append(best_individual) 
+            found=False 
+    print("ARTIFICIAL GENERATIONS: ", gen, "+", gen_a)
+    
+def slow_artificial_evolution():
+    global list_of_lists
+    global best_individual
+    global ARTIFICIAL_MUTATIONS
+    artificial_population=[]
+    artificial_population.append(best_individual)
+    gen=0
+    gen_a=0
+    print("BEGIN ARTIFICIAL EVOLUTION")
+    for ind in artificial_population:
+        gen+=1
+        print(gen)
+        for a in range(ARTIFICIAL_MUTATIONS):
+            o=mutation(ind.genome)
+            f = compute_fitness(o)
+            frankenstein=Individual(o,f)
+            if best_individual[1] < frankenstein[1]:
+                artificial_population.append(frankenstein)
+                best_individual=Individual(frankenstein[0], frankenstein[1])
+                gen_a=a+1
+
+    print("ARTIFICIAL GENERATIONS: ", gen, "+", gen_a)
 
 if __name__ == '__main__':
     take_data("01-the-cloud-abyss.txt")
     #print(list_of_lists)
     population=init_population()
     evolution(population)
+    print("EVOLUTION SCORE: " , best_individual[1])
+    slow_artificial_evolution()
     #print(best_individual[0])
-    print(best_fit)
+    print("FINAL SCORE: " , best_individual[1])
     print_data_output(best_individual[0])
            
 
