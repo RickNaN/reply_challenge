@@ -218,10 +218,10 @@ def evolution(population):
             new_population = init_population()
             final_population = []
             for i in range(len(population)):
-                if random.random() > 0.1: #70% new population
+                if random.random() > 0.1: #80% new population
                     final_population.append(new_population[i])
                 else:
-                    final_population.append(population[j]) #30% old population
+                    final_population.append(population[j]) #20% old population
                     j+=1
             population=final_population
     check_extinctions-=1       
