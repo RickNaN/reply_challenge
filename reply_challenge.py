@@ -9,13 +9,14 @@ POPULATION_SIZE = N
 OFFSPRING_SIZE = N*2        
 NUM_GENERATIONS = N*10
 ARTIFICIAL_MUTATIONS= 35000 #15000#25000 -> 1 min
-MAX_STEADY=10
-MAX_EXTINCTIONS=10   
+MAX_STEADY=8 #prova 6
+MAX_EXTINCTIONS=8 #prova 12  
 Individual = namedtuple("Individual", ["genome", "fitness"])
 TOURNAMENT_SIZE =int(N/4)
 GENETIC_OPERATOR_RANDOMNESS = 0.3
 MUTATION_THRESHOLD = 0.1
 CROSSOVER_THRESHOLD = 0.5
+total_pop = []
 
 #PROBLEM PARAMETERS
 INITIAL_STAMINA=None
@@ -100,6 +101,7 @@ def init_population():
     global N_TURNS
     global N_DEMONS
     global POPULATION_SIZE
+    global total_pop
     population = []
     for _ in range(POPULATION_SIZE):
         genome = []
@@ -107,6 +109,9 @@ def init_population():
             genome.append(i)
         random.shuffle(genome)
         population.append(Individual(genome, compute_fitness(genome)))
+    if (N_TURNS < N_DEMONS):
+        total_pop.append(population)
+        population = sorted(population, key=lambda i: i[1], reverse=True)[:N_TURNS]
 
     return population
 
@@ -209,13 +214,15 @@ def evolution(population):
         if check_steady == MAX_STEADY:
             check_extinctions+=1
             check_steady = 0
+            j = int(len(population)/2)
             new_population = init_population()
             final_population = []
             for i in range(len(population)):
-                if random.random() > 0.15: #70% new population
+                if random.random() > 0.1: #70% new population
                     final_population.append(new_population[i])
                 else:
-                    final_population.append(population[i]) #30% old population
+                    final_population.append(population[j]) #30% old population
+                    j+=1
             population=final_population
     check_extinctions-=1       
     print("TOT GENERATIONS: ", generation, "/", NUM_GENERATIONS)
@@ -248,13 +255,16 @@ def artificial_evolution():
     print("ARTIFICIAL GENERATIONS: ", gen, "+", gen_a)
 
 if __name__ == '__main__':
-    take_data("01-the-cloud-abyss.txt")
+    take_data("05-androids-armageddon.txt")
     #print(list_of_lists)
     population=init_population()
     evolution(population)
     print("EVOLUTION SCORE: " , best_individual[1])
-    artificial_evolution()
+    #artificial_evolution()
     #print(best_individual[0])
+    if (len(total_pop) > 0): 
+        tmp = list((set(total_pop) - set(best_individual)))
+        best_individual.append(tmp)
     print("FINAL SCORE: " , best_individual[1])
     print_data_output(best_individual[0])
            
